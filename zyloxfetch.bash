@@ -2,8 +2,8 @@
 
 # Function to display ASCII art based on OS
 get_ascii_art() {
-    case "$OS_NAME" in
-        *Ubuntu 22.04.5 LTS*)
+    case "$OS" in
+        *Ubuntu*)
             cat << "EOF"
              .-/+oossssoo+/-.              
          `:+ssssssssssssssssss+:`          
@@ -113,12 +113,16 @@ EOF
         /XXXXX/XXXXX/X/           
 EOF
             ;;
+        *)
+            echo "ASCII art not available for OS: $OS"
+            ;;
     esac
 }
 
+# Function to get system information
 get_system_info() {
     HOSTNAME=$(hostname)
-    OS=$(cat /etc/os-release | grep -w PRETTY_NAME | cut -d= -f2 | tr -d '"')
+    OS=$(grep -w PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d '"')
     KERNEL=$(uname -r)
     UPTIME=$(uptime -p | sed 's/up //')
     CPU=$(lscpu | grep "Model name:" | sed 's/Model name: *//g')
@@ -139,7 +143,7 @@ get_system_info() {
     SERIAL=$(cat /sys/devices/virtual/dmi/id/product_serial 2>/dev/null || echo "Unknown")
 }
 
-# Display Information
+# Display information
 display_info() {
     get_ascii_art
     echo "--------------------------------------------------"
@@ -165,6 +169,6 @@ display_info() {
     echo "--------------------------------------------------"
 }
 
-# Main Execution
+# Main execution
 get_system_info
 display_info
