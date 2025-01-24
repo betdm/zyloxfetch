@@ -3,7 +3,7 @@
 # Function to display ASCII art based on OS
 get_ascii_art() {
     case "$OS_NAME" in
-        *Ubuntu*)
+        *Ubuntu 22.04.5 LTS*)
             cat << "EOF"
              .-/+oossssoo+/-.              
          `:+ssssssssssssssssss+:`          
