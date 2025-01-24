@@ -113,9 +113,6 @@ EOF
         /XXXXX/XXXXX/X/           
 EOF
             ;;
-        *)
-            echo "No ASCII art available for this OS."
-            ;;
     esac
 }
 
