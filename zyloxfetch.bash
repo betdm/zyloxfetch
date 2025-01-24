@@ -1,18 +1,9 @@
 #!/bin/bash
 
-# Colors
-COLOR_RESET="\033[0m"
-COLOR_BOLD="\033[1m"
-COLOR_CYAN="\033[36m"
-COLOR_YELLOW="\033[33m"
-COLOR_MAGENTA="\033[35m"
-COLOR_BLUE="\033[34m"
-COLOR_GREEN="\033[32m"
-
-# ASCII Art (Ubuntu example)
+# Function to display ASCII art based on OS
 get_ascii_art() {
-    case "$(uname -s)" in
-        Linux)
+    case "$OS_NAME" in
+        *Ubuntu*)
             cat << "EOF"
              .-/+oossssoo+/-.              
          `:+ssssssssssssssssss+:`          
@@ -36,57 +27,123 @@ get_ascii_art() {
             .-/+oossssoo+/-.              
 EOF
             ;;
-        Darwin)
+        *Debian*)
             cat << "EOF"
-            .            .                
-         .o8          .o8                
-       .o888oo      .o888oo  .ooooo.     
-         888          888   d88' `88b    
-         888          888   888   888    
-         888 .        888 . 888   888    
-         "888"        "888" `Y8bod8P'    
+       _,met$$$$$gg.           
+    ,g$$$$$$$$$$$$$$$P.        
+  ,g$$P"     """Y$$.".         
+ ,$$P'              `$$$.      
+',$$P       ,ggs.     `$$b:    
+`d$$'     ,$P"'   .    $$$     
+ $$P      d$'     ,    $$P     
+ $$:      $$.   -    ,d$$'     
+ $$;      Y$b._   _,d$P'       
+ Y$$.    `.`"Y$$$$P"'          
+ `$$b      "-.__               
+  `Y$$                         
+   `Y$$.                       
+     `$$b.                     
+       `Y$$b.                  
+          `"Y$b._              
+              `""""            
+EOF
+            ;;
+        *Arch*)
+            cat << "EOF"
+                 -`                 
+                .o+`                
+               `ooo/                
+              `+oooo:               
+             `+oooooo:              
+             -+oooooo+:             
+           `/:-:++oooo+:            
+          `/++++/+++++++:           
+         `/++++++++++++++:          
+        `/+++ooooooooooooo/`        
+       ./ooosssso++osssssso+`       
+      .oossssso-````/ossssss+`      
+     -osssssso.      :ssssssso.     
+    :osssssss/        osssso+++`    
+   /ossssssss/        +ssssooo/-    
+ /ossssso+/:-        -:/+osssso+-   
+`..--                  `-/+osssso+  
+                                  ` 
+EOF
+            ;;
+        *Fedora*)
+            cat << "EOF"
+          /:-------------:/          
+       :-------------------::       
+     :-----------/shhOHbmp---:\     
+   /-----------omMMMNNNMMD  ---\    
+  :-----------sMMMMNMNMP.    ---:   
+ :-----------:MMMdP-------    ---:  
+,------------:MMMd--------    ---:  
+:------------:MMMd-------    .---:  
+:----    oNMMMMMMMMMNho     .----:  
+:--     .+shhhMMMmhhy++   .------/  
+:-    -------:MMMd--------------:   
+:-   --------/MMMd-------------;    
+:-    ------/hMMMy------------:     
+:-- :dMNdhhdNMMNo------------;      
+:---:sdNMMMMNds:------------:       
+:------:://:-------------::         
+:---------------------://           
+                                  
+EOF
+            ;;
+        *CentOS*)
+            cat << "EOF"
+                 _               
+              _/X               
+              /X/               
+             /X/               
+            /XX/       _       
+          _/XXX/     _/X/_     
+        _/XXXXXX/_ _/XX/X/     
+       /XXXXXXXXXX/XXXX/X/     
+      /XXXXX/XXXXX/XXXX/X/     
+     /XXXXX/XXXXX/XXXXXX/X/    
+    /XXXXX/XXXXX/XXXXXX/X/     
+   /XXXXX/XXXXX/XXXXXX/X/      
+  /XXXXX/XXXXX/XXXXXX/X/       
+ /XXXXX/XXXXX/XXXXXX/X/        
+         /XXXXX/XXXXX/X/         
+        /XXXXX/XXXXX/X/          
+        /XXXXX/XXXXX/X/           
 EOF
             ;;
         *)
-            echo "OS ASCII Art not available."
+            echo "No ASCII art available for this OS."
             ;;
     esac
 }
 
-# System Information
+# Gather system information
 get_system_info() {
+    OS_NAME=$(cat /etc/os-release | grep -w PRETTY_NAME | cut -d= -f2 | tr -d '"')
     HOSTNAME=$(hostname)
-    OS=$(uname -o 2>/dev/null || echo "Unknown")
     KERNEL=$(uname -r)
-    CPU=$(lscpu | grep "Model name:" | sed 's/Model name: *//g')
-    MEMORY=$(free -h --si | awk '/Mem:/ {print $3 "/" $2}')
-    DISK=$(df -h / | awk 'NR==2 {print $3 " / " $2}')
-    SWAP=$(free -h --si | awk '/Swap:/ {print $3 "/" $2}')
     UPTIME=$(uptime -p | sed 's/up //')
-    GPU=$(lspci | grep -i vga | awk -F: '{print $3}' | sed 's/^ *//')
-    BATTERY=$(acpi -b | awk '{print $4}' | tr -d ',' || echo "No battery")
+    CPU=$(lscpu | grep "Model name:" | sed 's/Model name: *//g')
+    MEMORY=$(free -h --si | awk '/Mem:/ {print $3 " / " $2}')
+    DISK=$(df -h / | awk 'NR==2 {print $3 " / " $2}')
     IP=$(hostname -I | awk '{print $1}')
 }
 
-# Display Information
+# Display information
 display_info() {
-    echo -e "${COLOR_CYAN}"
     get_ascii_art
-    echo -e "${COLOR_RESET}"
-
-    echo -e "${COLOR_BOLD}System Information:${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}Hostname:       ${COLOR_YELLOW}${HOSTNAME}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}OS:             ${COLOR_YELLOW}${OS}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}Kernel:         ${COLOR_YELLOW}${KERNEL}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}Uptime:         ${COLOR_YELLOW}${UPTIME}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}CPU:            ${COLOR_YELLOW}${CPU}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}GPU:            ${COLOR_YELLOW}${GPU}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}Memory:         ${COLOR_YELLOW}${MEMORY}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}Swap:           ${COLOR_YELLOW}${SWAP}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}Disk:           ${COLOR_YELLOW}${DISK}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}Battery:        ${COLOR_YELLOW}${BATTERY}${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}IP Address:     ${COLOR_YELLOW}${IP}${COLOR_RESET}"
-    echo
+    echo "--------------------------------------------------"
+    echo "HOSTNAME          : $HOSTNAME"
+    echo "OPERATING SYSTEM  : $OS_NAME"
+    echo "KERNEL            : $KERNEL"
+    echo "UPTIME            : $UPTIME"
+    echo "CPU               : $CPU"
+    echo "MEMORY            : $MEMORY"
+    echo "DISK              : $DISK"
+    echo "IP ADDRESS        : $IP"
+    echo "--------------------------------------------------"
 }
 
 # Main Execution
